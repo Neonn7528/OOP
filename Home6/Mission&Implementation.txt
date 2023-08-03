@@ -1,0 +1,75 @@
+Реализовать принцип разделения интерфейса ООП __ 2.Взять реализованный 
+код в рамках семинара 3, 4 или 5 и продемонстрировать 
+применение принципов, усвоенных на семинаре. Нужно в 
+проекте прокомментировать участки кода, 
+которые рефакторим, какой принцип применяем и почему.
+
+Принцип разделения интерфейса предполагает разделение 
+интерфейсов на более мелкие и специфические части, чтобы 
+клиенты могли 
+использовать только те методы, которые им необходимы.
+
+У нас есть код:
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Market implements QueueBehaviour, MarketBehaviour {
+    private Queue<String> queue;
+    public String queueSize;
+    public Market(){
+       queue = new LinkedList<>();
+    } 
+
+    @Override
+    public void enqueue(String person){
+        queue.add(person);
+        System.out.println(person + " встал(a) в очередь.");
+    }
+    @Override
+    public String dequeue (){
+        String person = queue.poll();
+            if (person != null){
+                System.out.println(person + " покинул(a) очередь.");
+        }
+        return person;
+    }
+    @Override
+    public int queueSize(){
+        return queue.size();
+    }
+    @Override
+    public void takeOrder(String order) {
+        System.out.println("Заказ " + order + " принят!");
+    }
+    @Override
+    public void serveOrder(String order) {
+        System.out.println(order + " - готово!");
+    }
+    public void update(){
+        if (queue.isEmpty()){
+            System.out.println("Свободная касса!");
+       }
+       else {
+        String person = queue.peek();//E peek(): возвращает 
+                                    //без удаления элемент из начала очереди.
+                                    // Если очередь пуста, возвращает значение null
+        System.out.println(person + " - забрал заказ!");
+        dequeue();
+       }
+    }
+}
+В текущем коде класс Market реализует два интерфейса, 
+QueueBehaviour и MarketBehaviour. Однако, есть некоторые 
+недостатки, которые можно улучшить с точки зрения принципа 
+разделения интерфейса:
+
+1. Нарушение принципа единой ответственности 
+(Single Responsibility Principle): Класс Market отвечает как 
+за управление очередью, так и за обработку заказов. 
+Эти две ответственности можно разделить на разные 
+интерфейсы и классы.
+
+2. Некоторые методы не связаны с некоторыми интерфейсами, 
+например, методы queueSize() и update(). Нужно пересмотреть 
+связь между методами и интерфейсами.
